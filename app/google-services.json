@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "542365586164",
+    "project_id": "sendmeamessage-55caa",
+    "storage_bucket": "sendmeamessage-55caa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:542365586164:android:d704092d40647a01e884a1",
+        "android_client_info": {
+          "package_name": "com.example.sendmeamessege"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "542365586164-3nt9gebgb9p8haocef23dv7sg9ld19nt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAHWmbIPHbH64prbyy3lydq0aXvdUGfOA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "542365586164-3nt9gebgb9p8haocef23dv7sg9ld19nt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

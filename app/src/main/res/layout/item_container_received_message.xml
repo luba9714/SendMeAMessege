@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="5dp"
+    android:layout_marginTop="10dp"
+    >
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/user_account"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="@drawable/background_icon"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:padding="5dp"
+        android:textSize="17sp"
+        app:layout_constraintBottom_toBottomOf="@+id/text_message_rec"
+        app:layout_constraintStart_toStartOf="parent"
+
+            />
+
+    <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_message_rec"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_sent_message"
+            android:textColor="@color/white"
+            android:layout_marginStart="5dp"
+            android:padding="10dp"
+            android:textSize="13sp"
+            android:gravity="center_vertical"
+            android:text="lube is the best"
+            app:layout_constraintStart_toEndOf="@id/user_account"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.75"
+            app:layout_constraintWidth_max="wrap"
+            />
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/date_time_rec"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="8sp"
+        android:layout_marginTop="5dp"
+        android:text="lube is "
+        android:layout_marginStart="55dp"
+        app:layout_constraintStart_toStartOf="@id/text_message_rec"
+        app:layout_constraintTop_toBottomOf="@id/text_message_rec"
+
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

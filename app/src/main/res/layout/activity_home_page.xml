@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/background"
+    tools:context=".Activities.HomePageActivity">
+
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/name_txt"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:textSize="20sp"
+        android:text="hjgjhgjhhj"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textColor="@color/purple"
+        android:textStyle="bold"
+
+            />
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Chat"
+        android:textColor="@color/purple"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/dino"
+        android:gravity="center"
+        android:layout_below="@id/name_txt"
+        />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_button"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="30dp"
+        app:tint="@color/white"
+        app:maxImageSize="35dp"
+        android:contentDescription="@string/app_name"
+        android:backgroundTint="@color/purple"
+        android:src="@drawable/ic_add" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/conversation_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="40dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:visibility="invisible" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerInParent="true" />
+
+
+
+</RelativeLayout>

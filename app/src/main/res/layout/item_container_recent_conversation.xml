@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="20dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="10dp"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        >
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/account_user"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@drawable/background_icon_white"
+            android:textAlignment="center"
+            android:textColor="@color/purple"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:paddingTop="7dp"
+
+            />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/storytime"
+            android:layout_toEndOf="@id/account_user"
+
+            />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/text_recent_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="16sp"
+            android:layout_toEndOf="@id/account_user"
+            android:layout_below="@id/text_name"
+            android:fontFamily="@font/storytime"
+            />
+
+
+
+
+
+    </RelativeLayout>
+
+
+
+
+</LinearLayout>
