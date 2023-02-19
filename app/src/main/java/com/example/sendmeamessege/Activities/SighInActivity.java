@@ -46,12 +46,9 @@ public class SighInActivity extends AppCompatActivity {
         }
         findViews();
         ifSighUp();
-        sigh_in_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(checkIfValid()){
-                    sighIn();
-                }
+        sigh_in_btn.setOnClickListener(v->{
+            if(checkIfValid()){
+                sighIn();
             }
         });
 
@@ -66,7 +63,6 @@ public class SighInActivity extends AppCompatActivity {
             public void onClick(View textView) {
                 startActivity(new Intent(SighInActivity.this, SighUpActivity.class));
             }
-
             @Override
             public void updateDrawState(TextPaint ds) {
                 super.updateDrawState(ds);

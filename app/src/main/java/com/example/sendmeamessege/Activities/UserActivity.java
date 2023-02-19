@@ -88,8 +88,6 @@ public class UserActivity extends AppCompatActivity implements UserListener {
     }
 
 
-
-
     private void findViews() {
         users_list=findViewById(R.id.users_list);
         progress_bar =findViewById(R.id.progress_bar);
@@ -114,20 +112,18 @@ public class UserActivity extends AppCompatActivity implements UserListener {
     }
     @SuppressLint("NonConstantResourceId")
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.log_out:
-                FirebaseFirestore database=FirebaseFirestore.getInstance();
-                DocumentReference documentReference=database.collection(FinalConstants.KEY_COLLECTION_USERS).document(preferenceManager.getString(FinalConstants.KEY_USER_ID));
-                HashMap<String,Object> updates= new HashMap<>();
-                updates.put(FinalConstants.KER_FCM_TOKEN, FieldValue.delete());
-                documentReference.update(updates).addOnSuccessListener(unused -> {preferenceManager.clear();
-                    startActivity(new Intent(this, SighInActivity.class));
-                }).addOnFailureListener(e -> Toast.makeText(getApplicationContext(),"Unable to sign in",Toast.LENGTH_SHORT));
-                //Toast.makeText(this, "update_user selected", Toast.LENGTH_SHORT).show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.log_out) {
+            FirebaseFirestore database = FirebaseFirestore.getInstance();
+            DocumentReference documentReference = database.collection(FinalConstants.KEY_COLLECTION_USERS).document(preferenceManager.getString(FinalConstants.KEY_USER_ID));
+            HashMap<String, Object> updates = new HashMap<>();
+            updates.put(FinalConstants.KER_FCM_TOKEN, FieldValue.delete());
+            documentReference.update(updates).addOnSuccessListener(unused -> {
+                preferenceManager.clear();
+                startActivity(new Intent(this, SighInActivity.class));
+            }).addOnFailureListener(e -> Toast.makeText(getApplicationContext(), "Unable to sign in", Toast.LENGTH_SHORT));
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @SuppressLint("RestrictedApi")
@@ -143,5 +139,4 @@ public class UserActivity extends AppCompatActivity implements UserListener {
         }
         return true;
     }
-
 }

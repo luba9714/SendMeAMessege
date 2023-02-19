@@ -35,7 +35,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 
 import javax.crypto.Cipher;
@@ -63,11 +62,8 @@ public class HomePageActivity extends AppCompatActivity implements ConversationL
         initFirst();
         updateName();
         getToken();
-        add_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(),UserActivity.class));
-            }
+        add_button.setOnClickListener(v->{
+            startActivity(new Intent(getApplicationContext(),UserActivity.class));
         });
         listenConversation();
     }
@@ -90,6 +86,7 @@ public class HomePageActivity extends AppCompatActivity implements ConversationL
         if(value!=null){
             for(DocumentChange documentChange : value.getDocumentChanges()){
                 String senderId,receiverId;
+                String key="",decryptedMessage=null;
                 if(documentChange.getType() == DocumentChange.Type.ADDED){
                     senderId=documentChange.getDocument().getString(FinalConstants.KEY_SENDER_ID);
                     receiverId=documentChange.getDocument().getString(FinalConstants.KEY_RECEIVER_ID);
@@ -99,26 +96,17 @@ public class HomePageActivity extends AppCompatActivity implements ConversationL
                     if(preferenceManager.getString(FinalConstants.KEY_USER_ID).equals(senderId)){
                         chatMessage.setConversationName(documentChange.getDocument().getString(FinalConstants.KET_RECEIVER_NAME));
                         chatMessage.setConversationId(documentChange.getDocument().getString(FinalConstants.KEY_RECEIVER_ID));
-                        //key =chatMessage.getSenderId().substring(0,8)+chatMessage.getReceiverId().substring(0,8);
-                        Log.d("pttt","check "+ chatMessage.getConversationId()+" second1");
-
                     }else{
                         chatMessage.setConversationName(documentChange.getDocument().getString(FinalConstants.KEY_SENDER_NAME));
                         chatMessage.setConversationId(documentChange.getDocument().getString(FinalConstants.KEY_SENDER_ID));
-                        Log.d("pttt","check "+chatMessage.getConversationId()+" second2");
-                        //key =chatMessage.getSenderId().substring(0,8)+chatMessage.getReceiverId().substring(0,8);
-
                     }
-//                    Log.d("pttt",key+" second1");
-                    String key=senderId.substring(0,8)+receiverId.substring(0,8);
-                    String decryptedMessage= null;
+                    key=senderId.substring(0,8)+receiverId.substring(0,8);
                     try {
                         decryptedMessage = decryptString(documentChange.getDocument().getString(FinalConstants.KEY_LAST_MESSAGE),key);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                     chatMessage.setMessage(decryptedMessage);
-                    //key =chatMessage.getSenderId().substring(0,8)+chatMessage.getReceiverId().substring(0,8);
                     chatMessage.setDate(documentChange.getDocument().getDate(FinalConstants.KEY_TIMESTAMP));
                     conversations.add(chatMessage);
                 }else if(documentChange.getType()==DocumentChange.Type.MODIFIED) {
@@ -126,11 +114,7 @@ public class HomePageActivity extends AppCompatActivity implements ConversationL
                         senderId= documentChange.getDocument().getString(FinalConstants.KEY_SENDER_ID);
                         receiverId =documentChange.getDocument().getString(FinalConstants.KEY_RECEIVER_ID);
                         if (conversations.get(i).getSenderId().equals(senderId) && conversations.get(i).getReceiverId().equals(receiverId)) {
-                           String key="";
                            key =senderId.substring(0,8)+receiverId.substring(0,8);
-
-                            Log.d("pttt",key+"second_modi");
-                            String decryptedMessage= null;
                             try {
                                 decryptedMessage = decryptString(documentChange.getDocument().getString(FinalConstants.KEY_LAST_MESSAGE),key);
                             } catch (Exception e) {
@@ -144,8 +128,6 @@ public class HomePageActivity extends AppCompatActivity implements ConversationL
                 }
             }
             conversations.sort((obj1, obj2) -> obj2.getDate().compareTo(obj1.getDate()));
-
-
             conversationsAdapter.notifyDataSetChanged();
             recyclerView.smoothScrollToPosition(0);
             LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);

@@ -23,13 +23,7 @@ public class SighUpActivity extends AppCompatActivity {
     private EditText input_name,input_email,input_password,confirm_password;
     private MaterialButton sign_up_btn;
     private ProgressBar progress_bar;
-
     private PreferenceManager preferenceManager;
-
-
-
-
-
 
 
     @Override
@@ -38,13 +32,9 @@ public class SighUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sigh_up);
         findViews();
         preferenceManager=new PreferenceManager(getApplicationContext());
-        sign_up_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(checkIfValid()){
-                    sighUp();
-                }
-
+        sign_up_btn.setOnClickListener(v->{
+            if(checkIfValid()){
+                sighUp();
             }
         });
 
@@ -77,7 +67,6 @@ public class SighUpActivity extends AppCompatActivity {
         user.put(FinalConstants.KEY_NAME,input_name.getText().toString());
         user.put(FinalConstants.KEY_EMAIL,input_email.getText().toString().toLowerCase());
         user.put(FinalConstants.KEY_PASSWORD,input_password.getText().toString());
-
         database.collection(FinalConstants.KEY_COLLECTION_USERS)
                 .add(user)
                 .addOnSuccessListener(documentReference -> {
@@ -85,8 +74,6 @@ public class SighUpActivity extends AppCompatActivity {
                     preferenceManager.putBoolean(FinalConstants.KEY_IS_SIGNED_IN,true);
                     preferenceManager.putString(FinalConstants.KEY_USER_ID,documentReference.getId());
                     preferenceManager.putString(FinalConstants.KEY_NAME,input_name.getText().toString());
-                    //preferenceManager.putString(FinalConstants.KEY_EMAIL,input_email.getText().toString().toLowerCase());
-                    //preferenceManager.putString(FinalConstants.KEY_PASSWORD,input_password.getText().toString());
                     Intent intent=new Intent(this,HomePageActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
@@ -96,11 +83,8 @@ public class SighUpActivity extends AppCompatActivity {
                     loading(false);
                     Toast.makeText(getApplicationContext(),exception.getMessage(),Toast.LENGTH_SHORT).show();
                 });
-
-
-
-
     }
+
     public boolean checkIfValid() {
         boolean isValid=true;
         if (input_name.getText().toString().isEmpty()) {

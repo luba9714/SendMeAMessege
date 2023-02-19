@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -46,7 +45,6 @@ public class ChatActivity extends AppCompatActivity {
     private ChatAdapter chatAdapter;
     private PreferenceManager preferenceManager;
     private FirebaseFirestore database;
-
     private EditText chat_message;
     private ImageView send_image;
     private RecyclerView chat_list;
@@ -65,7 +63,6 @@ public class ChatActivity extends AppCompatActivity {
                     chatMessage.setSenderId(documentChange.getDocument().getString(FinalConstants.KEY_SENDER_ID));
                     chatMessage.setReceiverId(documentChange.getDocument().getString(FinalConstants.KEY_RECEIVER_ID));
                     String key=chatMessage.getSenderId().substring(0,8)+chatMessage.getReceiverId().substring(0,8);
-                    Log.d("pttt",key);
                     String decryptedMessage= null;
                     try {
                         decryptedMessage = decryptString(documentChange.getDocument().getString(FinalConstants.KEY_MESSAGE),key);
@@ -81,7 +78,7 @@ public class ChatActivity extends AppCompatActivity {
             int count=chatMessages.size();
             Collections.sort(chatMessages, (obj1,obj2)->obj2.getDate().compareTo(obj1.getDate()));
             if(count==0){
-                chatAdapter.notifyDataSetChanged();;
+                chatAdapter.notifyDataSetChanged();
             }else{
                 chatAdapter.notifyItemRangeInserted(chatMessages.size(),chatMessages.size());
                 chat_list.smoothScrollToPosition(chatMessages.size()-1);
@@ -126,22 +123,15 @@ public class ChatActivity extends AppCompatActivity {
 
     public void sendMessage() throws Exception {
         if(conversationId!=null){
-            Log.d("pttt","update");
             updateConversation(chat_message.getText().toString());
         }else{
-            HashMap<String,Object> conversation=new HashMap<>();
-            conversation.put(FinalConstants.KEY_SENDER_ID,preferenceManager.getString(FinalConstants.KEY_USER_ID));
-            conversation.put(FinalConstants.KEY_SENDER_NAME,preferenceManager.getString(FinalConstants.KEY_NAME));
-            conversation.put(FinalConstants.KEY_RECEIVER_ID,receiverUser.getId());
-            conversation.put(FinalConstants.KET_RECEIVER_NAME,receiverUser.getName());
-            String key=preferenceManager.getString(FinalConstants.KEY_USER_ID).substring(0,8) + receiverUser.getId().substring(0,8);
-            Log.d("pttt",key);
-            String encryptMessage=encryptString(chat_message.getText().toString(),key);
-            conversation.put(FinalConstants.KEY_LAST_MESSAGE,encryptMessage);
-            conversation.put(FinalConstants.KEY_TIMESTAMP,new Date());
-            addConversation(conversation);
+            newConversation();
         }
+        newMessage();
+        chat_message.setText(null);
+    }
 
+    private void newMessage() throws Exception {
         HashMap<String,Object> message=new HashMap<>();
         message.put(FinalConstants.KEY_SENDER_ID,preferenceManager.getString(FinalConstants.KEY_USER_ID));
         message.put(FinalConstants.KEY_RECEIVER_ID,receiverUser.getId());
@@ -150,9 +140,20 @@ public class ChatActivity extends AppCompatActivity {
         message.put(FinalConstants.KEY_MESSAGE,encryptMessage);
         message.put(FinalConstants.KEY_TIMESTAMP,new Date());
         database.collection(FinalConstants.KEY_COLLECTION_CHATS).add(message);
-        chat_message.setText(null);
     }
 
+    public void newConversation() throws Exception {
+        HashMap<String,Object> conversation=new HashMap<>();
+        conversation.put(FinalConstants.KEY_SENDER_ID,preferenceManager.getString(FinalConstants.KEY_USER_ID));
+        conversation.put(FinalConstants.KEY_SENDER_NAME,preferenceManager.getString(FinalConstants.KEY_NAME));
+        conversation.put(FinalConstants.KEY_RECEIVER_ID,receiverUser.getId());
+        conversation.put(FinalConstants.KET_RECEIVER_NAME,receiverUser.getName());
+        String key=preferenceManager.getString(FinalConstants.KEY_USER_ID).substring(0,8) + receiverUser.getId().substring(0,8);
+        String encryptMessage=encryptString(chat_message.getText().toString(),key);
+        conversation.put(FinalConstants.KEY_LAST_MESSAGE,encryptMessage);
+        conversation.put(FinalConstants.KEY_TIMESTAMP,new Date());
+        addConversation(conversation);
+    }
 
     public String encryptString(String str, String key) throws Exception {
         SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(), "AES");
@@ -174,14 +175,12 @@ public class ChatActivity extends AppCompatActivity {
     }
     public String getReadableDateTime(Date date){
         return new SimpleDateFormat("MMMM dd, yyyy - hh:mm a", Locale.getDefault()).format(date);
-
     }
 
     private void initFirst() {
         database=FirebaseFirestore.getInstance();
         chatMessages=new ArrayList<>();
         preferenceManager=new PreferenceManager(getApplicationContext());
-
     }
 
     public void findViews() {
@@ -193,7 +192,6 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void listenMessages(){
-
         database.collection(FinalConstants.KEY_COLLECTION_CHATS)
                 .whereEqualTo(FinalConstants.KEY_SENDER_ID, preferenceManager.getString(FinalConstants.KEY_USER_ID))
                 .whereEqualTo(FinalConstants.KEY_RECEIVER_ID, receiverUser.getId())
@@ -204,8 +202,6 @@ public class ChatActivity extends AppCompatActivity {
                 .addSnapshotListener(eventListener);
     }
 
-
-
     public void addConversation(HashMap<String,Object> conversation){
         database.collection(FinalConstants.KET_COLLECTION_CONVERSATION)
                 .add(conversation)
@@ -214,9 +210,7 @@ public class ChatActivity extends AppCompatActivity {
     public void updateConversation(String message) throws Exception {
         DocumentReference documentReference=database.collection(FinalConstants.KET_COLLECTION_CONVERSATION)
                 .document(conversationId);
-
         String key=preferenceManager.getString(FinalConstants.KEY_USER_ID).substring(0,8) + receiverUser.getId().substring(0,8);
-        Log.d("pttt",key);
         String encryptMessage=encryptString(message,key);
         documentReference.update(FinalConstants.KEY_LAST_MESSAGE,encryptMessage,FinalConstants.KEY_TIMESTAMP,new Date(),
                 FinalConstants.KEY_SENDER_ID,preferenceManager.getString(FinalConstants.KEY_USER_ID),
@@ -224,6 +218,7 @@ public class ChatActivity extends AppCompatActivity {
                 FinalConstants.KEY_SENDER_NAME,preferenceManager.getString(FinalConstants.KEY_NAME),
                 FinalConstants.KET_RECEIVER_NAME,receiverUser.getName());
     }
+
     public void checkForConversation(){
         if(chatMessages.size()!=0){
             checkForConversationRemotely(preferenceManager.getString(FinalConstants.KEY_USER_ID),receiverUser.getId());
@@ -245,5 +240,4 @@ public class ChatActivity extends AppCompatActivity {
             conversationId=documentSnapshot.getId();
         }
     };
-
 }
