@@ -66,6 +66,7 @@ public class HomePageActivity extends AppCompatActivity implements ConversationL
             startActivity(new Intent(getApplicationContext(),UserActivity.class));
         });
         listenConversation();
+
     }
 
     public void listenConversation(){
