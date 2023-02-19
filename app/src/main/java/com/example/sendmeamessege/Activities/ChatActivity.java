@@ -64,16 +64,8 @@ public class ChatActivity extends AppCompatActivity {
                     ChatMessage chatMessage =new ChatMessage();
                     chatMessage.setSenderId(documentChange.getDocument().getString(FinalConstants.KEY_SENDER_ID));
                     chatMessage.setReceiverId(documentChange.getDocument().getString(FinalConstants.KEY_RECEIVER_ID));
-                    String key="";
-                    if(preferenceManager.getString(FinalConstants.KEY_NAME)
-                            .equals(documentChange.getDocument().getString(FinalConstants.KEY_SENDER_ID))){
-                        key=chatMessage.getReceiverId().substring(0,8)+chatMessage.getSenderId().substring(0,8);
-
-                    }else{
-                        key=chatMessage.getSenderId().substring(0,8)+chatMessage.getReceiverId().substring(0,8);
-
-                    }
-                    Log.d("pttt",key+" second");
+                    String key=chatMessage.getSenderId().substring(0,8)+chatMessage.getReceiverId().substring(0,8);
+                    Log.d("pttt",key);
                     String decryptedMessage= null;
                     try {
                         decryptedMessage = decryptString(documentChange.getDocument().getString(FinalConstants.KEY_MESSAGE),key);
@@ -134,9 +126,8 @@ public class ChatActivity extends AppCompatActivity {
 
     public void sendMessage() throws Exception {
         if(conversationId!=null){
-            String key=preferenceManager.getString(FinalConstants.KEY_USER_ID).substring(0,8) + receiverUser.getId().substring(0,8);
-            String encryptMessage=decryptString(chat_message.getText().toString(),key);
-            updateConversation(encryptMessage);
+            Log.d("pttt","update");
+            updateConversation(chat_message.getText().toString());
         }else{
             HashMap<String,Object> conversation=new HashMap<>();
             conversation.put(FinalConstants.KEY_SENDER_ID,preferenceManager.getString(FinalConstants.KEY_USER_ID));
@@ -144,6 +135,7 @@ public class ChatActivity extends AppCompatActivity {
             conversation.put(FinalConstants.KEY_RECEIVER_ID,receiverUser.getId());
             conversation.put(FinalConstants.KET_RECEIVER_NAME,receiverUser.getName());
             String key=preferenceManager.getString(FinalConstants.KEY_USER_ID).substring(0,8) + receiverUser.getId().substring(0,8);
+            Log.d("pttt",key);
             String encryptMessage=encryptString(chat_message.getText().toString(),key);
             conversation.put(FinalConstants.KEY_LAST_MESSAGE,encryptMessage);
             conversation.put(FinalConstants.KEY_TIMESTAMP,new Date());
@@ -219,11 +211,18 @@ public class ChatActivity extends AppCompatActivity {
                 .add(conversation)
                 .addOnSuccessListener(documentReference -> conversationId=documentReference.getId());
     }
-    public void updateConversation(String message){
+    public void updateConversation(String message) throws Exception {
         DocumentReference documentReference=database.collection(FinalConstants.KET_COLLECTION_CONVERSATION)
                 .document(conversationId);
-        documentReference.update(FinalConstants.KEY_LAST_MESSAGE,message,FinalConstants.KEY_TIMESTAMP,new Date());
 
+        String key=preferenceManager.getString(FinalConstants.KEY_USER_ID).substring(0,8) + receiverUser.getId().substring(0,8);
+        Log.d("pttt",key);
+        String encryptMessage=encryptString(message,key);
+        documentReference.update(FinalConstants.KEY_LAST_MESSAGE,encryptMessage,FinalConstants.KEY_TIMESTAMP,new Date(),
+                FinalConstants.KEY_SENDER_ID,preferenceManager.getString(FinalConstants.KEY_USER_ID),
+                FinalConstants.KEY_RECEIVER_ID,receiverUser.getId(),
+                FinalConstants.KEY_SENDER_NAME,preferenceManager.getString(FinalConstants.KEY_NAME),
+                FinalConstants.KET_RECEIVER_NAME,receiverUser.getName());
     }
     public void checkForConversation(){
         if(chatMessages.size()!=0){

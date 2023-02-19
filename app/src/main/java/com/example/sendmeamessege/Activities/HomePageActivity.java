@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -75,20 +76,12 @@ public class HomePageActivity extends AppCompatActivity implements ConversationL
         database.collection(FinalConstants.KET_COLLECTION_CONVERSATION)
                 .whereEqualTo(FinalConstants.KEY_SENDER_ID,preferenceManager.getString(FinalConstants.KEY_USER_ID))
                 .addSnapshotListener(eventListener);
+
         database.collection(FinalConstants.KET_COLLECTION_CONVERSATION)
                 .whereEqualTo(FinalConstants.KEY_RECEIVER_ID,preferenceManager.getString(FinalConstants.KEY_USER_ID))
                 .addSnapshotListener(eventListener);
     }
 
-    public String decryptString(String str, String key) throws Exception{
-        byte[] encryted_bytes = Base64.decode(str, Base64.DEFAULT);
-        SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(), "AES");
-        Cipher cipher = Cipher.getInstance(FinalConstants.CYPHER_INSTANCE);
-        cipher.init(Cipher.DECRYPT_MODE, skeySpec, new IvParameterSpec(FinalConstants.INITIALIZATION_VECTOR.getBytes()));
-        byte[] decrypted = cipher.doFinal(encryted_bytes);
-        return new String(decrypted, "UTF-8");
-
-    }
     @SuppressLint("NotifyDataSetChanged")
     private final EventListener<QuerySnapshot> eventListener=((value, error) -> {
         if(error!=null){
@@ -96,50 +89,61 @@ public class HomePageActivity extends AppCompatActivity implements ConversationL
         }
         if(value!=null){
             for(DocumentChange documentChange : value.getDocumentChanges()){
+                String senderId,receiverId;
                 if(documentChange.getType() == DocumentChange.Type.ADDED){
-                    String senderId=documentChange.getDocument().getString(FinalConstants.KEY_SENDER_ID);
-                    String receiverId=documentChange.getDocument().getString(FinalConstants.KEY_RECEIVER_ID);
+                    senderId=documentChange.getDocument().getString(FinalConstants.KEY_SENDER_ID);
+                    receiverId=documentChange.getDocument().getString(FinalConstants.KEY_RECEIVER_ID);
                     ChatMessage chatMessage=new ChatMessage();
                     chatMessage.setSenderId(senderId);
                     chatMessage.setReceiverId(receiverId);
                     if(preferenceManager.getString(FinalConstants.KEY_USER_ID).equals(senderId)){
                         chatMessage.setConversationName(documentChange.getDocument().getString(FinalConstants.KET_RECEIVER_NAME));
                         chatMessage.setConversationId(documentChange.getDocument().getString(FinalConstants.KEY_RECEIVER_ID));
+                        //key =chatMessage.getSenderId().substring(0,8)+chatMessage.getReceiverId().substring(0,8);
+                        Log.d("pttt","check "+ chatMessage.getConversationId()+" second1");
+
                     }else{
                         chatMessage.setConversationName(documentChange.getDocument().getString(FinalConstants.KEY_SENDER_NAME));
                         chatMessage.setConversationId(documentChange.getDocument().getString(FinalConstants.KEY_SENDER_ID));
-                    }
-                    String key="";
-                    if(preferenceManager.getString(FinalConstants.KEY_NAME)
-                            .equals(senderId)){
-                        key=receiverId.substring(0,8)+senderId.substring(0,8);
+                        Log.d("pttt","check "+chatMessage.getConversationId()+" second2");
+                        //key =chatMessage.getSenderId().substring(0,8)+chatMessage.getReceiverId().substring(0,8);
 
-                    }else{
-                        key=senderId.substring(0,8)+receiverId.substring(0,8);
                     }
-                    String decrypt= null;
+//                    Log.d("pttt",key+" second1");
+                    String key=senderId.substring(0,8)+receiverId.substring(0,8);
+                    String decryptedMessage= null;
                     try {
-                        decrypt = decryptString(documentChange.getDocument().getString(FinalConstants.KEY_LAST_MESSAGE),key);
+                        decryptedMessage = decryptString(documentChange.getDocument().getString(FinalConstants.KEY_LAST_MESSAGE),key);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-                    chatMessage.setMessage(decrypt);
-
+                    chatMessage.setMessage(decryptedMessage);
+                    //key =chatMessage.getSenderId().substring(0,8)+chatMessage.getReceiverId().substring(0,8);
                     chatMessage.setDate(documentChange.getDocument().getDate(FinalConstants.KEY_TIMESTAMP));
                     conversations.add(chatMessage);
                 }else if(documentChange.getType()==DocumentChange.Type.MODIFIED) {
                     for(int i = 0; i< conversations.size(); i++){
-                        String senderId= documentChange.getDocument().getString(FinalConstants.KEY_SENDER_ID);
-                        String receiverId =documentChange.getDocument().getString(FinalConstants.KEY_RECEIVER_ID);
+                        senderId= documentChange.getDocument().getString(FinalConstants.KEY_SENDER_ID);
+                        receiverId =documentChange.getDocument().getString(FinalConstants.KEY_RECEIVER_ID);
                         if (conversations.get(i).getSenderId().equals(senderId) && conversations.get(i).getReceiverId().equals(receiverId)) {
-                            conversations.get(i).setMessage(documentChange.getDocument().getString(FinalConstants.KEY_LAST_MESSAGE));
+                           String key="";
+                           key =senderId.substring(0,8)+receiverId.substring(0,8);
+
+                            Log.d("pttt",key+"second_modi");
+                            String decryptedMessage= null;
+                            try {
+                                decryptedMessage = decryptString(documentChange.getDocument().getString(FinalConstants.KEY_LAST_MESSAGE),key);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                            conversations.get(i).setMessage(decryptedMessage);
                             conversations.get(i).setDate(documentChange.getDocument().getDate(FinalConstants.KEY_TIMESTAMP));
                             break;
                         }
                     }
                 }
             }
-            Collections.sort(conversations, (obj1, obj2)->obj2.getDate().compareTo(obj1.getDate()));
+            conversations.sort((obj1, obj2) -> obj2.getDate().compareTo(obj1.getDate()));
 
 
             conversationsAdapter.notifyDataSetChanged();
@@ -153,6 +157,15 @@ public class HomePageActivity extends AppCompatActivity implements ConversationL
         recyclerView.setVisibility(View.VISIBLE);
 
     });
+    public String decryptString(String str, String key) throws Exception{
+        byte[] encryted_bytes = Base64.decode(str, Base64.DEFAULT);
+        SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance(FinalConstants.CYPHER_INSTANCE);
+        cipher.init(Cipher.DECRYPT_MODE, skeySpec, new IvParameterSpec(FinalConstants.INITIALIZATION_VECTOR.getBytes()));
+        byte[] decrypted = cipher.doFinal(encryted_bytes);
+        return new String(decrypted, "UTF-8");
+
+    }
     private void initFirst() {
         conversations =new ArrayList<>();
         conversationsAdapter=new RecentConversationsAdapter(conversations,this);

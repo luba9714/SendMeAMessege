@@ -18,8 +18,8 @@ import com.google.android.material.textview.MaterialTextView;
 import java.util.ArrayList;
 
 public class RecentConversationsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
-    private ArrayList<ChatMessage> chatMessages;
-    private ConversationListener conversationListener;
+    private final ArrayList<ChatMessage> chatMessages;
+    private final ConversationListener conversationListener;
 
     private View view;
 
@@ -60,10 +60,10 @@ public class RecentConversationsAdapter extends RecyclerView.Adapter<RecyclerVie
         return chatMessages.size();
     }
 
-    class ConversationHolder extends RecyclerView.ViewHolder{
-        private MaterialTextView textName;
-        private MaterialTextView textRecentMessage;
-        private MaterialTextView accountUser;
+    static class ConversationHolder extends RecyclerView.ViewHolder{
+        private final MaterialTextView textName;
+        private final MaterialTextView textRecentMessage;
+        private final MaterialTextView accountUser;
 
 
 
