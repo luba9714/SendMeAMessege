@@ -30,5 +30,11 @@ Password: 123456
 
 
 
-<img width="386" alt="צילום מסך 2023-08-23 ב-14 36 51" src="https://github.com/luba9714/SendMeAMessege/assets/64591949/9ee43a53-d9bd-4429-8196-6901417e3563">
+<img width="250" alt="צילום מסך 2023-08-23 ב-14 36 51" src="https://github.com/luba9714/SendMeAMessege/assets/64591949/9ee43a53-d9bd-4429-8196-6901417e3563">   
+
+
+
+
+<img width="250" alt="צילום מסך 2023-08-23 ב-14 38 01" src="https://github.com/luba9714/SendMeAMessege/assets/64591949/9688ab96-3fc5-46e6-b407-f3b7e9a3846f">
+
 
